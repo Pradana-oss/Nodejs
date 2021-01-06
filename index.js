@@ -3,6 +3,8 @@ const http = require('http');
 const url = require('url');
 const dotenv = require('dotenv');
 const mongodb = require('mongoose')
+const express = require('express');
+const bodyParser = require('body-parser')
 
 dotenv.config({path:'./config.env'})
 const DB = process.env.DATABASE.replace('<password>',process.env.DATABASE_PASSWORD)
@@ -17,12 +19,39 @@ console.log("Koneksi Berhasil")
 
 })
 
+const app = express();
+const port = 3000;
+
 const server = http.createServer((request,response) =>{
 console.log("server ready")
 const album = fs.readFileSync('./album.json','utf-8');
 const user = fs.readFileSync('./user.json','utf-8');
 const {query,pathname} = url.parse(request.url,true);
 
+// create application/json parser
+const jsonParser = bodyParser.json()
+// create application/x-www-form-urlencoded parser
+const urlencodedParser = bodyParser.urlencoded({ extended: true })
+
+app.get('/', (req, res) =>{
+
+  res.status(404)
+   .json({message:'Hello World',app:'Hello World'});
+
+})
+
+app.post('/api/post',urlencodedParser, (req, res) =>{
+  console.log(req.body);
+  res.status(200).json(req.body);
+  
+})
+
+
+
+app.listen(port,() => {
+
+console.log("Server Siyapp")
+})
 
 if(pathname === "/home" || pathname ==="/"){
     response.end(`<H1> Welcome, ${query.nama}  To API Dummy </H1>`);
